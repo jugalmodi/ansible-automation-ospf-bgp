@@ -1,4 +1,3 @@
-Ansible Automation with OSPF and BGP
 
 # Implemented Ansible Automation and OSPF, BGP protocols at INWK CCTV Company
 
