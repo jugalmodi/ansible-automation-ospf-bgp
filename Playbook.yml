@@ -1,0 +1,51 @@
+---
+- name: Configure
+  hosts: R1
+  gather_facts: false
+  connection: local
+
+  vars:
+    cli:
+      username: ansible
+      password: cisco
+
+  tasks:
+   - name: ConfigureInterface
+     ios_config:
+       provider: "{{ cli }}"
+       authorize: yes
+       parents: interface GigabitEthernet0/1
+       lines: 
+        - no shut
+   - name: Enabling Subinterface for vlans- Interconnection
+     ios_config:
+       provider: "{{ cli }}"
+       authorize: yes
+
+       parents: interface GigabitEthernet0/1.90
+       lines:
+        - encapsulation dot1Q 90
+        - ip address 192.168.41.1 255.255.255.252
+
+   - name: Enabling subinterface for vlans - Service_1
+     ios_config:
+       provider: "{{ cli }}"
+       authorize: yes
+       parents: interface GigabitEthernet0/1.101
+       lines:
+        - encapsulation dot1Q 101
+        - ip address 192.168.42.1 255.255.255.0
+
+   - name: Enabling Ospf
+     ios_config:
+       provider: "{{ cli }}"
+       authorize: yes
+       parents: router ospf 1
+       lines:
+        - router-id 10.5.5.30
+        - network 192.168.41.1 0.0.0.0 area 0
+        - network 192.168.42.1 0.0.0.0 area 0
+        - redistribute static subnets
+
+     register: print
+   - debug: var=print
